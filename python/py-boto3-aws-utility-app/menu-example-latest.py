@@ -361,7 +361,7 @@ def ASGProcessMgmt():
 
     for item in asgProcessList:
         C = Checkbutton(asgProcessMgmtWindow, text=item, font=subMenuFontStyle2,
-                        variable=check_boxes[item], anchor=W,  onvalue=1, offvalue=0, height=1, width=40, justify=LEFT)
+                        variable=check_boxes[item], anchor=W, onvalue=1, offvalue=0, height=1, width=40, justify=LEFT)
         C.pack(anchor=W, padx=5, pady=5)
 
     v = IntVar()

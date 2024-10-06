@@ -4,7 +4,7 @@ ARG BUILD_ARTIFACTSTAGINGDIRECTORY
 
 ## Initial folder creation, copying contents
 RUN apt-get update \
-    && apt install -y unzip \
+    && apt-get install -y unzip \
     && mkdir -p /app/ReleaseFolder/ \
     && chmod 755 /app/ReleaseFolder/ \
     && apt-get clean \
