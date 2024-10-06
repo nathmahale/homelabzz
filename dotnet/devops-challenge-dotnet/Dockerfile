@@ -6,7 +6,9 @@ ARG BUILD_ARTIFACTSTAGINGDIRECTORY
 RUN apt-get update \
     && apt install -y unzip \
     && mkdir -p /app/ReleaseFolder/ \
-    && chmod 755 /app/ReleaseFolder/
+    && chmod 755 /app/ReleaseFolder/ \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

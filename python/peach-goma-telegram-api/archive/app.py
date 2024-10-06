@@ -8,8 +8,6 @@ app = Flask(__name__)
 
 app.config['SERVER_NAME'] = os.environ['LOCAL_SERVER']
 app.config['SECRET_KEY'] = os.environ['API_KEY']
-app.config['DEBUG'] = True
-
 
 def token_required(f):
     @wraps(f)
@@ -52,4 +50,4 @@ def login():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
