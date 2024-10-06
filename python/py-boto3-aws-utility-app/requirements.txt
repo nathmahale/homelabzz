@@ -32,7 +32,7 @@ pycodestyle==2.6.0
 pycparser==2.22
 pylint==2.3.1
 pyparsing==2.4.7
-PySimpleGUI==4.26.0
+PySimpleGUI==5.0.6
 python-dateutil==2.8.0
 python-json2yaml==0.1.1
 pytz==2019.1
