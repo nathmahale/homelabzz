@@ -23,7 +23,6 @@ namespace DevOpsChallenge.SalesApi.Business.UnitTests.Fixtures
             // Configure database
             serviceCollection.AddDatabase(o =>
             {
-
                 // SQLite
                 o.UseSqlite(this.DatabaseConnection, s =>
                     s.MigrationsAssembly(typeof(DatabaseContext).Assembly.FullName));

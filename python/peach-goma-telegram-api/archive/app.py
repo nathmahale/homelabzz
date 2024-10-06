@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, make_response, session, flash, render_template
 import jwt
-import datetime
+from datetime import datetime as dt
+from datetime import timezone as tzz
 from functools import wraps
 import os
 
@@ -8,23 +9,6 @@ app = Flask(__name__)
 
 app.config['SERVER_NAME'] = os.environ['LOCAL_SERVER']
 app.config['SECRET_KEY'] = os.environ['API_KEY']
-
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.args.get('token')
-
-        if not token:
-            return (jsonify({'message': 'Token is missing'}), 403)
-
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
-        except:
-            return (jsonify({'message': 'Token is invalid'}), 403)
-
-        return (f(*args, **kwargs))
-    return (decorated)
-
 
 @app.route('/')
 def index():
@@ -40,7 +24,7 @@ def login():
         session['logged_in'] = True
         token = jwt.encode({
             'user': request.form['username'],
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=5)
+            'exp': dt.now(tzz.utc) + dt.timedelta(minutes=5)
         },
             app.config['SECRET_KEY'])
 
