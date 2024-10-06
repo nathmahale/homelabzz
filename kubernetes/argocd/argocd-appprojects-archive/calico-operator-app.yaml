@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/nathmahale/argocd.git
+    repoURL: https://github.com/nathmahale/homelabzz.git
     targetRevision: develop
-    path: calico-operator
+    path: kubernetes/argocd/calico-operator
   destination:
     server: https://kubernetes.default.svc
     namespace: tigera-operator

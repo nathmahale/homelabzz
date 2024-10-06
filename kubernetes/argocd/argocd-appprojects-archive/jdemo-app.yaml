@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/nathmahale/argocd.git
+    repoURL: https://github.com/nathmahale/homelabzz.git
     targetRevision: develop
-    path: jdemo-app
+    path: kubernetes/argocd/jdemo-app
   destination:
     server: https://kubernetes.default.svc
     namespace: jdemo

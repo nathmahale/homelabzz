@@ -1,7 +1,5 @@
 # Self Managed Argo CD - App of Everything
 
-[![CodeFactor](https://www.codefactor.io/repository/github/nathmahale/argocd/badge)](https://www.codefactor.io/repository/github/nathmahale/argocd)
-
 ## Table of Contents
 
 - [Self Managed Argo CD - App of Everything](#self-managed-argo-cd---app-of-everything)
@@ -10,10 +8,10 @@
   - [Clone Repository](#clone-repository)
   - [Create Local Kubernetes Cluster](#create-local-kubernetes-cluster)
   - [Git Repository Hierarchy](#git-repository-hierarchy)
-- [Create App Of Everything Pattern](#create-app-of-everything-pattern)
-- [Install Argo CD Using Helm](#install-argo-cd-using-helm)
-- [Demo With Sample Application](#demo-with-sample-application)
-- [Cleanup](#cleanup)
+  - [Create App Of Everything Pattern](#create-app-of-everything-pattern)
+  - [Install Argo CD Using Helm](#install-argo-cd-using-helm)
+  - [Demo With Sample Application](#demo-with-sample-application)
+  - [Cleanup](#cleanup)
 
 ## Introduction
 
@@ -24,7 +22,7 @@ This project aims to install a self-managed Argo CD using the App of App pattern
 Clone kurtburak/argocd repository to your local device.
 
 ```bash
-git clone https://github.com/nathmahale/argocd.git
+git clone https://github.com/nathmahale/homelabzz.git
 ```
 
 ## Create Local Kubernetes Cluster
@@ -72,7 +70,7 @@ server:
   config:
     repositories: |
       - type: git
-        url: https://github.com/nathmahale/argocd.git
+        url: https://github.com/nathmahale/homelabzz.git
       - name: argo-helm
         type: helm
         url: https://argoproj.github.io/argo-helm
@@ -90,7 +88,7 @@ server:
           - values.yaml
           - ../values-override.yaml
         path: argocd-install/argo-cd
-        repoURL: https://github.com/nathmahale/argocd.git
+        repoURL: https://github.com/nathmahale/homelabzz.git
         targetRevision: HEAD
       syncPolicy:
         syncOptions:
@@ -103,7 +101,7 @@ server:
       project: argocd
       source:
         path: argocd-apps
-        repoURL: https://github.com/nathmahale/argocd.git
+        repoURL: https://github.com/nathmahale/homelabzz.git
         targetRevision: HEAD
         directory:
           recurse: true
@@ -120,7 +118,7 @@ server:
       project: argocd
       source:
         path: argocd-appprojects
-        repoURL: https://github.com/nathmahale/argocd.git
+        repoURL: https://github.com/nathmahale/homelabzz.git
         targetRevision: HEAD
         directory:
           recurse: true
@@ -236,7 +234,7 @@ spec:
   project: sample-project
   source:
     path: sample-app/
-    repoURL: https://github.com/nathmahale/argocd.git
+    repoURL: https://github.com/nathmahale/homelabzz.git
     targetRevision: HEAD
   syncPolicy:
     syncOptions:

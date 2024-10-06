@@ -7,10 +7,9 @@ server:
   ## reference https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cm.yaml
   configEnabled: true
   config:
-    ui.cssurl: https://raw.githubusercontent.com/nathmahale/argocd/develop/argocd-custom-theme/custom-theme.css
     repositories: |
       - type: git
-        url: https://github.com/nathmahale/argocd.git
+        url: https://github.com/nathmahale/homelabzz.git
         name: argocd-local-setup
       - name: argo-helm
         type: helm
@@ -32,7 +31,7 @@ server:
           - values.yaml
           - ../values-override.yaml
         path: argocd-install/argo-cd
-        repoURL: https://github.com/nathmahale/argocd.git
+        repoURL: https://github.com/nathmahale/homelabzz.git
         targetRevision: develop
       syncPolicy:
         syncOptions:
@@ -48,7 +47,7 @@ server:
       project: argocd
       source:
         path: argocd-appprojects
-        repoURL: https://github.com/nathmahale/argocd.git
+        repoURL: https://github.com/nathmahale/homelabzz.git
         targetRevision: develop
         directory:
           recurse: true
