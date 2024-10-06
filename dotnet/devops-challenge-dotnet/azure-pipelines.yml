@@ -1,0 +1,138 @@
+trigger:
+- develop
+
+pool:
+  name: 'Default'
+
+variables:
+- group: application-var-group
+- name: buildPlatform
+  value: 'Any CPU'
+- name: system.debug
+  value: false
+- name: dockerPublicRepo
+  value: 'dmfpython/dotnet-mvc-app-repo'
+- name: dotNetCommandVerbosityLevel
+  value: 'minimal'
+
+stages:
+- stage: BuildAppStage
+  displayName: 'Build application stage'
+  jobs:
+  - job: BuildAppJob
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'restore'
+        workingDirectory: $(Build.SourcesDirectory)
+      displayName: '[ dotnetTask ] Run dotnet restore'
+    
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        projects: 'src/DevOpsChallenge.SalesApi/DevOpsChallenge.SalesApi.csproj'
+        workingDirectory: $(Build.SourcesDirectory)/
+        arguments: '--configuration $(buildConfiguration) --verbosity $(dotNetCommandVerbosityLevel)' 
+      displayName: '[ dotnetTask ] Build application'
+      env:
+        CONNECTIONSTRINGS__DATABASE: $(CONNECTIONSTRINGS__DATABASE)
+
+#   - job: UpdateDBJob
+#     steps:
+#     - checkout: none
+#     - task: DotNetCoreCLI@2
+#       inputs:
+#         command: custom
+#         custom: dotnet-ef
+#         arguments: 'database update --no-build'
+#         projects: 'src/DevOpsChallenge.SalesApi.Database/DevOpsChallenge.SalesApi.Database.csproj'
+#         workingDirectory: $(Build.SourcesDirectory)/src/DevOpsChallenge.SalesApi.Database
+#       displayName: '[ dotnetTask ] Database Update'
+#       env:
+#         CONNECTIONSTRINGS__DATABASE: $(CONNECTIONSTRINGS__DATABASE)
+#         DOTNET_ROOT: $(DOTNET_ROOT)
+
+        
+- stage: TestAppStage
+  displayName: 'Test application stage'
+  jobs:
+  - job: TestAppJob
+    steps:
+    - checkout: none
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: test
+        projects: '$(Build.SourcesDirectory)/tests/DevOpsChallenge.SalesApi.Business.UnitTests/DevOpsChallenge.SalesApi.Business.UnitTests.csproj'
+        arguments: '--verbosity $(dotNetCommandVerbosityLevel)'
+      displayName: '[ dotnetTask ] Run unit tests on application'
+
+    - task: Bash@3
+      inputs:
+        workingDirectory: $(Build.SourcesDirectory)
+        targetType: filePath
+        filePath: $(Build.SourcesDirectory)/temp-scripts/run-integration-tests.sh
+      displayName: '[ bashTask ] Run Integration tests on application - WIP'
+      env:
+        BUILD_DIR: $(Build.SourcesDirectory)
+        CONNECTIONSTRINGS__DATABASE: $(CONNECTIONSTRINGS__DATABASE)
+
+- stage: PublishPackageDockerizeAppStage
+  displayName: 'Publish,Package and Containerize Application'
+  jobs:
+  - job: PublishAndPackageAppJob
+    steps:
+    - checkout: none
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: publish
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/ --no-build --no-restore --verbosity $(dotNetCommandVerbosityLevel)'
+        projects: 'src/DevOpsChallenge.SalesApi/DevOpsChallenge.SalesApi.csproj'
+      displayName: '[ dotnetTask ] Publish application'
+      env:
+        CONNECTIONSTRINGS__DATABASE: $(CONNECTIONSTRINGS__DATABASE)
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: pack
+        arguments: '--configuration $(buildConfiguration) --no-build --verbosity $(dotNetCommandVerbosityLevel)'
+        outputDir: '$(Build.ArtifactStagingDirectory)/ReleasePackagesNuGetFormat'
+        projects: 'src/DevOpsChallenge.SalesApi/DevOpsChallenge.SalesApi.csproj'
+      displayName: '[ dotnetTask ] Package application'
+      env:
+        CONNECTIONSTRINGS__DATABASE: $(CONNECTIONSTRINGS__DATABASE)
+    
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'dockerHubConnection'
+        command: 'login'
+      displayName: '[ dockerTask ] docker login'
+
+    - task: Bash@3
+      inputs:
+        targetType: inline
+        script: cp $BUILD_DIR/Dockerfile $BUILD_ARTIFACTSTAGINGDIRECTORY
+      env:
+        BUILD_DIR: $(Build.SourcesDirectory)
+        BUILD_ARTIFACTSTAGINGDIRECTORY: $(Build.ArtifactStagingDirectory)
+      displayName: '[ bashTask ] Copy Dockerfile to StagingDirectory'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'dockerHubConnection'
+        repository: $(dockerPublicRepo)
+        command: 'build'
+        Dockerfile: '$(Build.ArtifactStagingDirectory)/Dockerfile'
+      displayName: '[ dockerTask ] docker build'
+        
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'dockerHubConnection'
+        repository: $(dockerPublicRepo)
+        command: 'push'
+      displayName: '[ dockerTask ] docker push'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'dockerHubConnection'
+        command: 'logout'
+      displayName: '[ dockerTask ] docker logout'

@@ -1,0 +1,65 @@
+# Image pull secrets to provision for pulling images from private registries.
+# If provided, references to the secrets must also be provided in the installation section.
+imagePullSecrets: {}
+
+# Configures general installation parameters for Calico. Schema is based
+# on the operator.tigera.io/Installation API documented
+# here: https://projectcalico.docs.tigera.io/reference/installation/api#operator.tigera.io/v1.InstallationSpec
+installation:
+  enabled: true
+  kubernetesProvider: ""
+
+# Configures general installation parameters for Calico. Schema is based
+# on the operator.tigera.io/Installation API documented
+# here: https://projectcalico.docs.tigera.io/reference/installation/api#operator.tigera.io/v1.APIServerSpec
+apiServer:
+  enabled: true
+
+# Certificates for communications between calico/node and calico/typha.
+# If left blank, will be automatically provisioned.
+certs:
+  node:
+    key:
+    cert:
+    commonName:
+  typha:
+    key:
+    cert:
+    commonName:
+    caBundle:
+
+# Resources for the tigera/operator pod itself.
+resources:
+  limits:
+    cpu: 1024m
+    memory: 1024Mi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+# Tolerations for the tigera/operator pod itself.
+# By default, will schedule on all possible place.
+tolerations:
+- effect: NoExecute
+  operator: Exists
+- effect: NoSchedule
+  operator: Exists
+
+# NodeSelector for the tigera/operator pod itself.
+nodeSelector:
+  kubernetes.io/os: linux
+
+# Custom annotations for the tigera/operator pod itself
+podAnnotations: {}
+
+# Custom labels for the tigera/operator pod itself
+podLabels: {}
+
+# Configuration for the tigera operator images to deploy.
+tigeraOperator:
+  image: tigera/operator
+  version: v1.28.1
+  registry: quay.io
+calicoctl:
+  image: docker.io/calico/ctl
+  tag: v3.24.1
