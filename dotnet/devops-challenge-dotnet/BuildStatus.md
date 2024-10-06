@@ -1,4 +1,4 @@
-Azure Build Pipeline Build Graph and Status Badge
+# Azure Build Pipeline Build Graph and Status Badge
 
 ![Azure Pipelines Ubuntu Build Status](https://dev.azure.com/musingsofdevops/devops-dotnet-challenge-project/_apis/build/status/nathmahale.devops-challenge-dotnet?branchName=develop)
 
