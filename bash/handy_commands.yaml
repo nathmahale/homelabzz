@@ -1,0 +1,25 @@
+---
+
+commands:
+    - clilogin: >
+        argocd login $(kubectl -n argocd get svc argocd-server --output=jsonpath='{.spec.clusterIP}') \
+            --insecure --username admin --password "<password>"
+    - upgradeHelmChart:
+        - navigateToInstallDir: >
+            cd ${REPO_DIR}/argocd-install/
+        - upgradeHelmChartWithOverrides: >
+            helm upgrade argocd ./argo-cd --namespace=argocd  -f values-override.yaml
+    - getArgocdAdminPassword: >
+        kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+    - resetArgocdAdminPassword:
+        - getHashPassword: >
+            python3 -c "import bcrypt; print(bcrypt.hashpw(b'<NEW_PASSWORD_HERE>', bcrypt.gensalt()).decode())"
+        - descryptSecret: >
+            kubectl -n argocd patch secret argocd-secret -p '{"stringData": {
+                "admin.password": "<HASH_VALUE>",
+                "admin.passwordMtime": "'$(date +%FT%T%Z)'"}}'
+    - installHelmCharts:
+        - navigateToInstallDir: >
+            cd ${REPO_DIR}/argocd-install
+        - installHelmChartWithOverrides: >
+            helm install argocd ./argo-cd --namespace=argocd --create-namespace -f values-override.yaml
