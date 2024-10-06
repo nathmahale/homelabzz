@@ -1,10 +1,5 @@
 from _cffi_backend import callback
-from boto3automationlibrary import *
-import sys
-
-## Enter the absolute path location of atomationLibrary.py to make it accessible during the tool's runtime
-sys.path.append(
-    r"<<location>>")
+from library.boto3automationlibrary import *
 
 
 def getDGTarget():
@@ -79,7 +74,7 @@ def getEC2PasswordWrapper():
     instanceIDTextEntry = Entry(getEC2InstanceWindow, font=subMenuFontStyle1)
     instanceIDTextEntry.pack(anchor=W)
     v = IntVar()
-    for val, envNameListing in enumerate(envList):
+    for val, envNameListing in enumerate(envNameList):
         R = Radiobutton(getEC2InstanceWindow, text=envNameListing[0], bd=3, bg="green", activebackground="cyan",
                         padx=10, font=subMenuFontStyle2, variable=v, indicatoron=0,
                         command=lambda: retrieveWindowsEC2PasswordClipboard(
@@ -94,23 +89,23 @@ def getEC2PasswordWrapper():
 
 def EC2GenericCommandWrapper(choice, instanceID):
     if int(choice) == 0:
-        return(terminateEC2Instance(instanceID))
+        return (terminateEC2Instance(instanceID))
     elif int(choice) == 1:
-        return(stopEC2Instance(instanceID))
+        return (stopEC2Instance(instanceID))
     elif int(choice) == 2:
-        return(startEC2Instance(instanceID))
+        return (startEC2Instance(instanceID))
     elif int(choice) == 3:
-        return(rebootEC2Instance(instanceID))
+        return (rebootEC2Instance(instanceID))
     elif int(choice) == 4:
-        return(enableTerminationProtection(instanceID))
+        return (enableTerminationProtection(instanceID))
     elif int(choice) == 5:
-        return(disableTerminationProtection(instanceID))
+        return (disableTerminationProtection(instanceID))
     elif int(choice) == 6:
-        return(addCPMTag(instanceID))
+        return (addCPMTag(instanceID))
     elif int(choice) == 7:
-        return(tagExtendedOfficeHoursEC2(instanceID))
+        return (tagExtendedOfficeHoursEC2(instanceID))
     elif int(choice) == 8:
-        return(addRDSTag(instanceID))
+        return (addRDSTag(instanceID))
 
 
 def EC2ManagementWrapper():
@@ -201,12 +196,16 @@ def copyBetweenSameS3():
     s3SameCopyWindow.title("Copy file in same S3 bucket")
     radio_buttons = {item: IntVar()
                      for item in s3BucketNameList}
-    var1= tk.StringVar()
-
+    var1 = tk.StringVar()
 
     s3CopyFromKeyLabel = Label(
         s3SameCopyWindow, text="Enter fromKey", font=subMenuFontStyle2)
     s3CopyFromKeyLabel.pack(anchor=W)
+
+    s3CopyBucketTextEntry = Entry(
+        s3SameCopyWindow, font=subMenuFontStyle2, width=60)
+    s3CopyBucketTextEntry.pack(anchor=W)
+
     s3CopyFromKeyTextEntry = Entry(
         s3SameCopyWindow, font=subMenuFontStyle2, width=60)
     s3CopyFromKeyTextEntry.pack(anchor=W)
@@ -218,6 +217,11 @@ def copyBetweenSameS3():
     s3CopyToKeyLabel = Label(
         s3SameCopyWindow, text="Enter toKey", font=subMenuFontStyle2)
     s3CopyToKeyLabel.pack(anchor=W)
+
+    s3CopyBucketTextEntry = Entry(
+        s3SameCopyWindow, font=subMenuFontStyle2, width=60)
+    s3CopyBucketTextEntry.pack(anchor=W)
+
     s3CopyToKeyTextEntry = Entry(
         s3SameCopyWindow, font=subMenuFontStyle2, width=60)
     s3CopyToKeyTextEntry.pack(anchor=W)
@@ -257,11 +261,14 @@ def copyBetweenS3Buckets():
     # Radiobutton set2:
     for item in s3BucketNameList:
         Radiobutton(s3IntraCopyWindow, text=item, font=subMenuFontStyle2,
-                    bg=radioButtonBGColor, selectcolor=color["green"], activebackground=color["orange"], value=item, var=var2).place(x=300, y=y)
+                    bg=radioButtonBGColor, selectcolor=color["green"],
+                    activebackground=color["orange"],
+                    value=item, var=var2).place(x=300, y=y)
         y += 26
 
     s3CopyFromKeyLabel = Label(
-        s3IntraCopyWindow, text="Please enter from key eg: folder1/folder2/file1.txt", font=subMenuFontStyle2)
+        s3IntraCopyWindow, text="Please enter from key eg: folder1/folder2/file1.txt",
+        font=subMenuFontStyle2)
     s3CopyFromKeyLabel.pack(anchor=W)
 
     s3CopyFromKeyTextEntry = Entry(
@@ -269,8 +276,14 @@ def copyBetweenS3Buckets():
     s3CopyFromKeyTextEntry.pack(anchor=W)
 
     s3CopyToKeyLabel = Label(
-        s3IntraCopyWindow, text="Please enter to key eg:folder1/folder2/file1.txt", font=subMenuFontStyle2)
+        s3IntraCopyWindow, text="Please enter to key eg:folder1/folder2/file1.txt",
+        font=subMenuFontStyle2)
     s3CopyToKeyLabel.pack(anchor=W)
+
+    s3CopyBucketTextEntry = Entry(
+        s3IntraCopyWindow, font=subMenuFontStyle2, width=60)
+    s3CopyBucketTextEntry.pack(anchor=W)
+
     s3CopyToKeyTextEntry = Entry(
         s3IntraCopyWindow, font=subMenuFontStyle1, width=60)
     s3CopyToKeyTextEntry.pack(anchor=W)
@@ -313,7 +326,8 @@ def deleteStackFunction():
     stackLabel = Label(deleteStackWindow,
                        text="Please enter Stack name", font=subMenuFontStyle2)
     stackLabel.grid(row=0, sticky=NW)
-    stackEntryTextEntry = Entry(deleteStackWindow, font=subMenuFontStyle1, width=50)
+    stackEntryTextEntry = Entry(
+        deleteStackWindow, font=subMenuFontStyle1, width=50)
     stackEntryTextEntry.grid(row=1)
 
     submitButton = Button(deleteStackWindow, text="Submit", font=submitButtonStyle,
@@ -342,7 +356,7 @@ def ASGProcessMgmt():
         for key, value in check_boxes.items():
             if (value.get()):
                 asgSelectedList.append(key)
-        return(asgSelectedList)
+        return (asgSelectedList)
 
     def clearASGList():
         for item in asgProcessList:
@@ -355,9 +369,9 @@ def ASGProcessMgmt():
                 asgSelectedList.append(key)
 
         if int(operation) == 10:
-            return(resumeASGProcesses(ASGSuffix, asgSelectedList))
+            return (resumeASGProcesses(ASGSuffix, asgSelectedList))
         elif int(operation) == 100:
-            return(suspendASGProcesses(ASGSuffix, asgSelectedList))
+            return (suspendASGProcesses(ASGSuffix, asgSelectedList))
 
     for item in asgProcessList:
         C = Checkbutton(asgProcessMgmtWindow, text=item, font=subMenuFontStyle2,
@@ -377,6 +391,7 @@ def ASGProcessMgmt():
 
     Button(asgProcessMgmtWindow, text="Exit App", font=exitButtonStyle,
            bg=exitButtonBGColor, fg=exitButtonFGColor, command=asgProcessMgmtWindow.quit).pack(anchor=W)
+
 
 def detachInstanceFromASG():
     asgInstanceDetachWindow = Toplevel(rootObject)
@@ -399,38 +414,40 @@ def detachInstanceFromASG():
     Button(asgInstanceDetachWindow, text="Exit App", font=exitButtonStyle,
            bg=exitButtonBGColor, fg=exitButtonFGColor, command=asgInstanceDetachWindow.quit).pack(anchor=W)
 
+
 def modifyASGCapacity():
-   modifyASGCapacityWindow = Toplevel(rootObject)
-   modifyASGCapacityWindow.geometry('')
-   modifyASGCapacityWindow.title("Modify ASG capacity")
-   Label(modifyASGCapacityWindow,
+    modifyASGCapacityWindow = Toplevel(rootObject)
+    modifyASGCapacityWindow.geometry('')
+    modifyASGCapacityWindow.title("Modify ASG capacity")
+    Label(modifyASGCapacityWindow,
           text="Please enter only ASG suffix as mentioned below\n eg: 'XOB0S0XNA9RT'\n application-env-asg-XZHOZIBFBGS1-AutoScalingGroup-XOB0S0XNA9RT", font=subMenuFontStyle2, justify=LEFT).pack(anchor=NW)
-   asgSuffixTextEntry = Entry(
+    asgSuffixTextEntry = Entry(
         modifyASGCapacityWindow, font=subMenuFontStyle2, justify=LEFT, width=15)
-   asgSuffixTextEntry.pack(anchor=NW)
+    asgSuffixTextEntry.pack(anchor=NW)
 
-   Label(modifyASGCapacityWindow,
+    Label(modifyASGCapacityWindow,
           text="desiredCapacity", font=subMenuFontStyle2, justify=LEFT).pack(anchor=NW)
-   desiredCapacityTextEntry = Entry(
+    desiredCapacityTextEntry = Entry(
         modifyASGCapacityWindow, font=subMenuFontStyle1, justify=LEFT, width=5)
-   desiredCapacityTextEntry.pack(anchor=NW)
+    desiredCapacityTextEntry.pack(anchor=NW)
 
-   Label(modifyASGCapacityWindow,
+    Label(modifyASGCapacityWindow,
           text="minInstance", font=subMenuFontStyle2, justify=LEFT).pack(anchor=NW)
-   minInstanceTextEntry = Entry(
+    minInstanceTextEntry = Entry(
         modifyASGCapacityWindow, font=subMenuFontStyle1, justify=LEFT, width=5)
-   minInstanceTextEntry.pack(anchor=NW)
+    minInstanceTextEntry.pack(anchor=NW)
 
-   Label(modifyASGCapacityWindow,
+    Label(modifyASGCapacityWindow,
           text="maxInstance", font=subMenuFontStyle2, justify=LEFT).pack(anchor=NW)
-   maxInstanceTextEntry = Entry(
+    maxInstanceTextEntry = Entry(
         modifyASGCapacityWindow, font=subMenuFontStyle1, justify=LEFT, width=5)
-   maxInstanceTextEntry.pack(anchor=NW)
+    maxInstanceTextEntry.pack(anchor=NW)
 
-   Button(modifyASGCapacityWindow, text="Submit", activebackground="red", bd=3, bg="green", font=submitButtonStyle,
+    Button(modifyASGCapacityWindow, text="Submit", activebackground="red", bd=3, bg="green", font=submitButtonStyle,
            command=lambda: messagebox.showinfo("showinfo", modifyASGCapacityFunction(asgSuffixTextEntry.get(), desiredCapacityTextEntry.get(), minInstanceTextEntry.get(), maxInstanceTextEntry.get()))).pack(anchor=W)
-   Button(modifyASGCapacityWindow, text="Exit App", font=exitButtonStyle,
+    Button(modifyASGCapacityWindow, text="Exit App", font=exitButtonStyle,
            bg=exitButtonBGColor, fg=exitButtonFGColor, command=modifyASGCapacityWindow.quit).pack(anchor=W)
+
 
 def updateDGTarget():
     updateDGTWindow = Toplevel(rootObject)
@@ -442,16 +459,16 @@ def updateDGTarget():
     getDGTLabel.pack(anchor=W)
 
     app_radio_buttons = {item: IntVar()
-                     for item in appNameList}
+                         for item in appNameList}
 
     env_name_radio_buttons = {item: IntVar()
-                     for item in envNameList}
+                              for item in envNameList}
 
     component_name_radio_buttons = {item: IntVar()
-                     for item in componentNameList}
-    
+                                    for item in componentNameList}
+
     # Radiobutton variables:
-    var1, var2, var3 = tk.StringVar() , tk.StringVar(), tk.StringVar()
+    var1, var2, var3 = tk.StringVar(), tk.StringVar(), tk.StringVar()
     y = 20
 
     for item in appNameList:
@@ -482,10 +499,11 @@ def updateDGTarget():
     asgSuffixTextEntry.place(x=0, y=520)
 
     Button(updateDGTWindow, text="Submit", font=submitButtonStyle, bg=submitButtonBGColor, fg=getRandomColor(),
-                          command=lambda: messagebox.showinfo("showinfo", updateCodeDeployDGTarget(var1.get(), var2.get(), var3.get(), asgSuffixTextEntry.get()))).place(x=0, y=550)
+           command=lambda: messagebox.showinfo("showinfo", updateCodeDeployDGTarget(var1.get(), var2.get(), var3.get(), asgSuffixTextEntry.get()))).place(x=0, y=550)
 
     Button(updateDGTWindow, text="Exit App", font=exitButtonStyle,
-                        bg=exitButtonBGColor, fg=exitButtonFGColor, command=updateDGTWindow.quit).place(x=0, y=580)
+           bg=exitButtonBGColor, fg=exitButtonFGColor, command=updateDGTWindow.quit).place(x=0, y=580)
+
 
 def loadBalancerTargetChange():
     loadBalancerTargetChange = Toplevel(rootObject)
@@ -497,21 +515,20 @@ def loadBalancerTargetChange():
     getDGTLabel.pack(anchor=W)
 
     app_radio_buttons = {item: IntVar()
-                     for item in appNameList}
+                         for item in appNameList}
 
     env_name_radio_buttons = {item: IntVar()
-                     for item in envNameList}
+                              for item in envNameList}
 
     component_name_radio_buttons = {item: IntVar()
-                     for item in componentNameList}
-    
+                                    for item in componentNameList}
+
     port_radio_buttons = {item: IntVar()
-                     for item in portList}
+                          for item in portList}
 
     # Radiobutton variables:
-    var1, var2, var3 = tk.StringVar() , tk.StringVar(), tk.StringVar()
+    var1, var2, var3 = tk.StringVar(), tk.StringVar(), tk.StringVar()
     var4, var5 = tk.IntVar(), tk.IntVar()
-
 
     # y = 230
     y = 140
@@ -522,9 +539,9 @@ def loadBalancerTargetChange():
     Label(loadBalancerTargetChange, text="TargetGroup Operation", font=subMenuFontStyle2,
           bg=radioButtonBGColor).place(x=0, y=330)
     registerRadioButton = Radiobutton(loadBalancerTargetChange, text='register', font=subMenuFontStyle2,
-                bg=radioButtonBGColor, selectcolor=color["green"], activebackground=color["orange"], value=0, var= var5)
+                                      bg=radioButtonBGColor, selectcolor=color["green"], activebackground=color["orange"], value=0, var=var5)
     deregisterRadioButton = Radiobutton(loadBalancerTargetChange, text='deregister', font=subMenuFontStyle2,
-                bg=radioButtonBGColor, selectcolor=color["green"], activebackground=color["orange"], value=1, var= var5)
+                                        bg=radioButtonBGColor, selectcolor=color["green"], activebackground=color["orange"], value=1, var=var5)
     registerRadioButton.place(x=0, y=350)
     deregisterRadioButton.place(x=0, y=380)
 
@@ -547,8 +564,8 @@ def loadBalancerTargetChange():
 
     Label(loadBalancerTargetChange, text="Port Number", font=subMenuFontStyle2,
           bg=radioButtonBGColor).place(x=290, y=0)
-    
-    y=20
+
+    y = 20
     for item in portList:
         Radiobutton(loadBalancerTargetChange, text=item, font=subMenuFontStyle2,
                     bg=radioButtonBGColor, selectcolor=color["green"], activebackground=color["orange"], value=item, var=var4).place(x=290, y=y)
@@ -560,14 +577,20 @@ def loadBalancerTargetChange():
         loadBalancerTargetChange, font=subMenuFontStyle1, justify=LEFT, width=25)
     instanceIDTextEntry.place(x=0, y=470)
 
+    asgSuffixTextEntry = Entry(
+        loadBalancerTargetChange, font=subMenuFontStyle1, justify=LEFT)
+    asgSuffixTextEntry.pack(anchor=NW)
+
     Button(loadBalancerTargetChange, text="Submit", font=submitButtonStyle, bg=submitButtonBGColor, fg=getRandomColor(),
-                          command=lambda: messagebox.showinfo("showinfo", updateCodeDeployDGTarget(var1.get(), var2.get(), var3.get(), asgSuffixTextEntry.get()))).place(x=0, y=500)
+           command=lambda: messagebox.showinfo("showinfo", updateCodeDeployDGTarget(var1.get(), var2.get(), var3.get(), asgSuffixTextEntry.get()))).place(x=0, y=500)
 
     Button(loadBalancerTargetChange, text="Exit App", font=exitButtonStyle,
-                        bg=exitButtonBGColor, fg=exitButtonFGColor, command=loadBalancerTargetChange.quit).place(x=0, y=530)
+           bg=exitButtonBGColor, fg=exitButtonFGColor, command=loadBalancerTargetChange.quit).place(x=0, y=530)
+
 
 def onExit(self):
     self.quit()
+
 
 rootObject = Tk()
 rootObject.geometry('300x275')
@@ -585,7 +608,8 @@ exitButton = Button(rootObject, text="Exit App", font=exitButtonStyle, bg=exitBu
 
 
 # EC2
-menubutton0 = Menubutton(rootObject, text=masterMenuList[0], font=customFontStyle, bg=mainmenuBGColor, fg=mainmenuFGColor, relief=RAISED, anchor=W)
+menubutton0 = Menubutton(rootObject, text=masterMenuList[0], font=customFontStyle,
+                         bg=mainmenuBGColor, fg=mainmenuFGColor, relief=RAISED, anchor=W)
 menubutton0.menu = Menu(menubutton0)
 menubutton0["menu"] = menubutton0.menu
 menubutton0.menu.add_command(label="Generic EC2 instance operations",
@@ -600,7 +624,8 @@ menubutton0.menu.add_command(
     label="Change Loadbalancer Target", font=subMenuFontStyle1, command=loadBalancerTargetChange)
 
 # ASG
-menubutton1 = Menubutton(rootObject, text=masterMenuList[1], font=customFontStyle, bg=mainmenuBGColor, fg=mainmenuFGColor, relief=RIDGE, justify=LEFT, anchor=W)
+menubutton1 = Menubutton(rootObject, text=masterMenuList[1], font=customFontStyle,
+                         bg=mainmenuBGColor, fg=mainmenuFGColor, relief=RIDGE, justify=LEFT, anchor=W)
 menubutton1.menu = Menu(menubutton1)
 menubutton1["menu"] = menubutton1.menu
 menubutton1.menu.add_command(
@@ -611,7 +636,8 @@ menubutton1.menu.add_command(
     label="Modify ASG capacity", font=subMenuFontStyle1, command=modifyASGCapacity)
 
 # CFN
-menubutton2 = Menubutton(rootObject, text=masterMenuList[2], font=customFontStyle, bg=mainmenuBGColor, fg=mainmenuFGColor, relief=GROOVE, justify=LEFT, anchor=W)
+menubutton2 = Menubutton(rootObject, text=masterMenuList[2], font=customFontStyle,
+                         bg=mainmenuBGColor, fg=mainmenuFGColor, relief=GROOVE, justify=LEFT, anchor=W)
 menubutton2.menu = Menu(menubutton2)
 menubutton2["menu"] = menubutton2.menu
 menubutton2.menu.add_command(
@@ -620,7 +646,8 @@ menubutton2.menu.add_command(
     label="Delete cfn stack", font=subMenuFontStyle1, command=deleteStackFunction)
 
 # CodeDeploy
-menubutton3 = Menubutton(rootObject, text=masterMenuList[3], font=customFontStyle, bg=mainmenuBGColor, fg=mainmenuFGColor, relief=RIDGE, justify=LEFT, anchor=W)
+menubutton3 = Menubutton(rootObject, text=masterMenuList[3], font=customFontStyle,
+                         bg=mainmenuBGColor, fg=mainmenuFGColor, relief=RIDGE, justify=LEFT, anchor=W)
 menubutton3.menu = Menu(menubutton3)
 menubutton3["menu"] = menubutton3.menu
 menubutton3.menu.add_command(
@@ -651,5 +678,5 @@ menubutton4.pack(fill=BOTH, expand=True)
 exitButton.pack(fill=BOTH, expand=True)
 
 
-## Tool's main entry point
+# Tool's main entry point
 rootObject.mainloop()

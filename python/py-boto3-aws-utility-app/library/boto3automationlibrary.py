@@ -12,7 +12,11 @@
 
 
 import boto3 as bt
-import sys, rsa, base64, matplotlib, json
+import sys
+import rsa
+import base64
+import matplotlib
+import json
 import argparse as ar
 import subprocess as sb
 from tkinter import *
@@ -27,10 +31,10 @@ from botocore import exceptions as ex
 from tkinter import messagebox
 import pprint as ppr
 
-## Set default profile to name SAML, you can change ton any other profile saml, based on your AWS profile setup
+# Set default profile to name SAML, you can change ton any other profile saml, based on your AWS profile setup
 bt.setup_default_session(profile_name='saml')
 
-## Initilize the client for different AWS services
+# Initilize the client for different AWS services
 ec2client = bt.client('ec2')
 asgclient = bt.client('autoscaling')
 cfclient = bt.client('cloudformation')
@@ -39,16 +43,16 @@ cdclient = bt.client('codedeploy')
 s3Resource = bt.resource('s3')
 s3client = bt.client('s3')
 
-## for codedeployfile upload
+# for codedeployfile upload
 downloadsDir = r'<<DownloadDir>>'
 zip_file_name_suffix = '.zip'
 
-## S3 prefix is harcoded here
-## TODO: make it dynamic
+# S3 prefix is harcoded here
+# TODO: make it dynamic
 s3_object_prefix_key = "abc/"
 
-## Color scheme, can be changed to your liking
-## Refer https://htmlcolorcodes.com/
+# Color scheme, can be changed to your liking
+# Refer https://htmlcolorcodes.com/
 submitButtonBGColor = '#302908'
 exitButtonBGColor = '#000000'
 exitButtonFGColor = '#F1C9C9'
@@ -57,7 +61,8 @@ radioButtonBGColor = '#FFFFFF'
 mainmenuBGColor = '#FFCD98'
 mainmenuFGColor = '#010100'
 
-snapshotIDList = []
+snapshotIDList = list()
+s3BucketNameList = list()
 
 masterMenuList = ["EC2 instance management",
                   "ASG management",
@@ -90,22 +95,26 @@ ec2ManagementMenu = [
 
 asgProcessList = ['Launch', 'Terminate', 'AddToLoadBalancer', 'AlarmNotification',
                   'AZRebalance', 'HealthCheck', 'InstanceRefresh', 'ReplaceUnhealthy', 'ScheduledActions']
-asgSelectedList = []
-autoScalingGroupsMasterList = []
+asgSelectedList             = list()
+autoScalingGroupsMasterList = list()
+appNameList                 = ["app1", "app2", "app3" ]
+componentNameList           = ["app1-component1", "app2-component1", "app3-component1" ]
 
-color = {"black": "#32373E", "orange": "#EE8D1F", "green": "#33FF7C"}
+color = {
+    "black": "#32373E",
+    "orange": "#EE8D1F",
+    "green": "#33FF7C"
+}
 
 envNameList = ['ops', 'dev', 'int', 'uat', 'prd', 'ept']
 portList = [80, 8080, 443, 15672, 11223, 8443, 5672, 8444]
 
-
 def Extract(lst):
     return [item[0] for item in lst]
 
-
 def getRandomColor():
     colorList = list(matplotlib.colors.cnames.values())
-    return(rn.choice(colorList))
+    return (rn.choice(colorList))
 
 
 def getPrivateIP(InstanceID):
@@ -130,7 +139,7 @@ def resumeASGProcesses(ASGSuffix, processList):
         AutoScalingGroupName=str(ASGName[0]),
         ScalingProcesses=processList)
     autoScalingGroupsMasterList.clear()
-    return(ppr.pformat(response))
+    return (ppr.pformat(response))
 
 
 def suspendASGProcesses(ASGSuffix, processList):
@@ -144,7 +153,7 @@ def suspendASGProcesses(ASGSuffix, processList):
         AutoScalingGroupName=str(ASGName[0]),
         ScalingProcesses=processList)
     autoScalingGroupsMasterList.clear()
-    return(ppr.pformat(response))
+    return (ppr.pformat(response))
 
 
 # Manage EC2 Instance
@@ -154,7 +163,7 @@ def terminateEC2Instance(InstanceID):
             InstanceID,
         ]
     )
-    return(InstanceID + " is being terminated, please check")
+    return (InstanceID + " is being terminated, please check")
 
 
 def startEC2Instance(InstanceID):
@@ -164,7 +173,7 @@ def startEC2Instance(InstanceID):
         ]
 
     )
-    return(InstanceID + " is started, please check")
+    return (InstanceID + " is started, please check")
 
 
 def stopEC2Instance(InstanceID):
@@ -174,7 +183,7 @@ def stopEC2Instance(InstanceID):
         ]
 
     )
-    return(InstanceID + " is stopped, please check")
+    return (InstanceID + " is stopped, please check")
 
 
 def rebootEC2Instance(InstanceID):
@@ -184,7 +193,7 @@ def rebootEC2Instance(InstanceID):
         ]
 
     )
-    return(InstanceID + " is rebooted, please check")
+    return (InstanceID + " is rebooted, please check")
 
 
 def enableTerminationProtection(InstanceID):
@@ -194,7 +203,7 @@ def enableTerminationProtection(InstanceID):
         },
         InstanceId=InstanceID,
     )
-    return("Termination Protection is enabled for " + InstanceID + ".please check")
+    return ("Termination Protection is enabled for " + InstanceID + ".please check")
 
 
 def disableTerminationProtection(InstanceID):
@@ -204,7 +213,7 @@ def disableTerminationProtection(InstanceID):
         },
         InstanceId=InstanceID,
     )
-    return("Termination Protection is disabled for " + InstanceID + ".please check")
+    return ("Termination Protection is disabled for " + InstanceID + ".please check")
 
 
 def deleteStack(stackName):
@@ -212,7 +221,7 @@ def deleteStack(stackName):
         StackName=stackName,
 
     )
-    return(stackName + " is being deleted, please check")
+    return (stackName + " is being deleted, please check")
 
 
 def getWindowsPassword(InstanceID, choice, privKeyFile):
@@ -233,7 +242,7 @@ def getStackResources(stackName):
     response = cfclient.list_stack_resources(
         StackName=stackName,
     )
-    return(response['StackResourceSummaries'][0])
+    return (response['StackResourceSummaries'][0])
 
 
 def describeASG(ASGName):
@@ -256,7 +265,7 @@ def addRDSTag(InstanceID):
             },
         ]
     )
-    return(ppr.pformat(response))
+    return (ppr.pformat(response))
 
 
 def addCPMTag(InstanceID):
@@ -271,7 +280,7 @@ def addCPMTag(InstanceID):
             },
         ]
     )
-    return(ppr.pformat(response))
+    return (ppr.pformat(response))
 
 
 def untagWS(InstanceID):
@@ -286,7 +295,7 @@ def untagWS(InstanceID):
             },
         ]
     )
-    return(ppr.pformat(response))
+    return (ppr.pformat(response))
 
 
 def enableDeletionProtectionLB(lbARN):
@@ -299,7 +308,7 @@ def enableDeletionProtectionLB(lbARN):
             },
         ]
     )
-    return(response)
+    return (response)
 
 
 def enableDeletionProtectionLB(lbARN):
@@ -312,7 +321,7 @@ def enableDeletionProtectionLB(lbARN):
             },
         ]
     )
-    return(response)
+    return (response)
 
 
 def tagExtendedOfficeHoursEC2(InstanceID):
@@ -327,7 +336,7 @@ def tagExtendedOfficeHoursEC2(InstanceID):
             },
         ]
     )
-    return(ppr.pformat(response))
+    return (ppr.pformat(response))
 
 
 def getCodeDeployDGTarget(CDAppName):
@@ -335,7 +344,7 @@ def getCodeDeployDGTarget(CDAppName):
         applicationName=CDAppName,
         deploymentGroupName=(CDAppName + "-deployment-group")
     )
-    return(reponse['deploymentGroupInfo']['autoScalingGroups'][0]['name'])
+    return (reponse['deploymentGroupInfo']['autoScalingGroups'][0]['name'])
 
 
 def describeStack(stackName):
@@ -349,9 +358,9 @@ def describeStack(stackName):
             stackOutputList.append(Outputs['OutputValue'])
             stackOutputList.append("------------------")
         stackOutputList = '\n'.join(stackOutputList)
-        return(stackOutputList)
+        return (stackOutputList)
     except ex.ClientError as ce:
-        return(ce)
+        return (ce)
 
 
 def changeEC2InstanceType(InstanceID, instanceType):
@@ -361,7 +370,7 @@ def changeEC2InstanceType(InstanceID, instanceType):
         },
         InstanceId=InstanceID,
     )
-    return("InstanceType" + instanceType + " modified, please check\n " + str(response(['ResponseMetadata']['HTTPStatusCode'])))
+    return ("InstanceType" + instanceType + " modified, please check\n " + str(response(['ResponseMetadata']['HTTPStatusCode'])))
 
 
 def uploadToS3Location(absolutePathName, bucketName, keyName):
@@ -370,7 +379,7 @@ def uploadToS3Location(absolutePathName, bucketName, keyName):
         pt.join(downloadsDir, absolutePathName + zip_file_name_suffix),
         bucketName,
         (s3_object_prefix_key + keyName + zip_file_name_suffix))
-    return(uploadOperation)
+    return (uploadOperation)
 
 
 def copyBetweenSameS3Buckets(bucketName, fromKey, toKey):
@@ -393,11 +402,11 @@ def copyBetweenSameS3Buckets(bucketName, fromKey, toKey):
         s3ObjectCount = range(len(response['Contents']))
         for i in s3ObjectCount:
             s3ObjectList.append(response['Contents'][i]['Key'])
-        return("S3 copy is successfull, please check bucket")
+        return ("S3 copy is successfull, please check bucket")
     except ex.ClientError as ce:
-        return(ce)
+        return (ce)
     except UnboundLocalError as ue:
-        return(ue)
+        return (ue)
 
 
 def listS3Objects(bucketName, keyName):
@@ -417,10 +426,10 @@ def listS3Objects(bucketName, keyName):
         for i in s3ObjectCount:
             s3ObjectList.append(response['Contents'][i]['Key'])
     except ex.ClientError as ce:
-        return(ce)
+        return (ce)
     except UnboundLocalError as ue:
-        return(ue)
-    return(s3ObjectList)
+        return (ue)
+    return (s3ObjectList)
 
 
 def deregisterAMIdeleteSnapshots(amiID):
@@ -444,9 +453,9 @@ def deregisterAMIdeleteSnapshots(amiID):
                 SnapshotId=str(j)
             )
     #    snapshotIDList.clear()
-        return('snaphotsDeleted are -->' + str(snapshotIDList))
+        return ('snaphotsDeleted are -->' + str(snapshotIDList))
     except ex.ClientError as ce:
-        return(ce)
+        return (ce)
 
 
 def getASGNameFromStack(stackName, appName, envName, roleName):
@@ -457,7 +466,7 @@ def getASGNameFromStack(stackName, appName, envName, roleName):
     for Outputs in response['Stacks'][0]['Outputs']:
         stackOutputList.append(Outputs['OutputValue'])
     asgName = [i for i in stackOutputList if roleName in i]
-    return(str(asgName[0]))
+    return (str(asgName[0]))
     cdclient.update_deployment_group(
         applicationName='string')
 
@@ -482,11 +491,11 @@ def copyBetweenDifferentS3Buckets(fromBucketName, toBucketName, fromKey, toKey):
         s3ObjectCount = range(len(response['Contents']))
         for i in s3ObjectCount:
             s3ObjectList.append(response['Contents'][i]['Key'])
-        return(s3ObjectList)
+        return (s3ObjectList)
     except ex.ClientError as ce:
-        return(ce)
+        return (ce)
     except UnboundLocalError as ue:
-        return(ue)
+        return (ue)
 
 
 def detachEC2InstanceFromASG(ASGSuffix, instanceId):
@@ -504,9 +513,9 @@ def detachEC2InstanceFromASG(ASGSuffix, instanceId):
             AutoScalingGroupName=str(ASGName[0]),
             ShouldDecrementDesiredCapacity=False
         )
-        return(ppr.pformat(response))
+        return (ppr.pformat(response))
     except ex.ClientError as ce:
-        return(ce)
+        return (ce)
 
 
 def modifyASGCapacityFunction(ASGSuffix, desiredCapacity, minSize, maxSize):
@@ -522,7 +531,7 @@ def modifyASGCapacityFunction(ASGSuffix, desiredCapacity, minSize, maxSize):
         MaxSize=int(maxSize),
         DesiredCapacity=int(desiredCapacity)
     )
-    return(ppr.pformat(response))
+    return (ppr.pformat(response))
 
 
 def updateCodeDeployDGTarget(appName, envName, componentName, ASGSuffix):
@@ -540,4 +549,4 @@ def updateCodeDeployDGTarget(appName, envName, componentName, ASGSuffix):
             str(ASGName[0])
         ]
     )
-    return(ppr.pformat(response))
+    return (ppr.pformat(response))
