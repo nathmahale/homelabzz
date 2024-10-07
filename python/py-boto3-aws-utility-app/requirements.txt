@@ -37,7 +37,7 @@ python-dateutil==2.8.0
 python-json2yaml==0.1.1
 pytz==2019.1
 PyYAML==5.4
-requests==2.32.2
+requests==2.32.3
 rsa==4.9
 sh==1.12.14
 six==1.12.0
