@@ -166,3 +166,5 @@ instance/
 # Celery stuff
 celerybeat-schedule
 celerybeat.pid
+
+*test.py
