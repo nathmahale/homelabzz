@@ -5,4 +5,4 @@ updates:
   - package-ecosystem: "pip" # See documentation for possible values
     directory: "/python" # Location of package manifests
     schedule:
-      interval: "weekly"
+      interval: "daliy"
