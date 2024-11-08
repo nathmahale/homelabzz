@@ -45,6 +45,6 @@ termcolor==1.1.0
 tkcalendar==1.6.1
 toml==0.10.1
 troposphere==4.8.0
-typed-ast==1.4.0
+typed-ast==1.5.5
 urllib3==2.2.2
 wrapt==1.11.2
