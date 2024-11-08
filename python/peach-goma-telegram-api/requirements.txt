@@ -54,7 +54,7 @@ python-telegram-bot==13.14
 pytz==2022.1
 pytz-deprecation-shim==0.1.0.post0
 PyYAML==5.4.1
-requests==2.25.1
+requests==2.32.3
 SecretStorage==3.3.1
 service-identity==18.1.0
 six==1.16.0
