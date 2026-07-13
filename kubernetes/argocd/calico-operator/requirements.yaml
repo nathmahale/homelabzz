@@ -1,4 +1,0 @@
-dependencies:
-- name: tigera-operator
-  version: 3.25.0
-  repository: https://projectcalico.docs.tigera.io/charts
